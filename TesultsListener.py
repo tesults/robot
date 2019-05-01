@@ -233,7 +233,7 @@ class TesultsListener:
                                     step['_Args'] = arg.text
                                     firstArg = False
                                 else :
-                                    step['_Args'] = step['_args'] + ', ' + arg.text 
+                                    step['_Args'] = step['_Args'] + ', ' + arg.text 
                     steps.append(step)
                     stepnum += 1      
                 c['steps'] = steps

@@ -3,6 +3,7 @@ import sys
 import tempfile
 import configparser
 import tesults
+import xml.etree.ElementTree as ET
 
 class TesultsListener:
     ROBOT_LISTENER_API_VERSION = 2
@@ -123,6 +124,9 @@ class TesultsListener:
         testcase = {
             'name': name, 
         }
+        robotId = attributes.get('id')
+        if (robotId is not None):
+            testcase['robot-id'] = robotId
         suite = attributes.get('longname')
         suite = suite[0 : suite.rfind('.')]
         if (suite.find('Robot-Test.') == 0):
@@ -165,6 +169,75 @@ class TesultsListener:
                     testcase['files'] = files
         self.data['results']['cases'].append(testcase)
 
+    def output_file(self, path):
+        tree = ET.parse(path)
+        root = tree.getroot()
+        testcases = self.data['results']['cases']
+        testelements = {}
+        for c in root.iter('test'):
+            if (c.attrib['id'] is not None):
+                testelements[c.attrib['id']] = c
+        # robot ids and matching elements:
+        for c in testcases:
+            if (c['robot-id'] is not None):
+                element = testelements[c['robot-id']]
+                stepnum = 0
+                steps = []
+                for kw in element.iter('kw'):
+                    # print(ET.tostring(kw).decode())
+                    step = {}
+                    step['name'] = kw.attrib['name']
+                    try:
+                        step['_library'] = kw.attrib['library']
+                    except KeyError:
+                        print('')
+                    
+                    step['num'] = stepnum
+                    for child in kw:
+                        if (child.tag == 'status'):
+                            if (child.attrib['status'] == 'PASS'):
+                                step['result'] = 'pass'
+                            elif (child.attrib['status'] == 'FAIL'):
+                                step['result'] = 'fail'
+                            else:
+                                step['result'] = 'unknown'
+                            step['_Start'] = child.attrib['starttime']
+                            step['_End'] = child.attrib['endtime']
+                        if (child.tag == 'doc'):
+                            step['desc'] = child.text
+                        if (child.tag == 'msg'):
+                            step['reason'] = child.text
+                            if (step['name'] == 'Take Screenshot' and step['_library'] == 'Screenshot'):
+                                srcIndex = child.text.find('src=')
+                                if (srcIndex != -1):
+                                    srcMsg = child.text[srcIndex + 4 : len(child.text)]
+                                    if (srcMsg.find('"') == 0):
+                                        srcMsg = srcMsg[1: len(srcMsg)]
+                                    endquoteindex = srcMsg.find('"')
+                                    srcMsg = srcMsg[0: endquoteindex]
+                                    # srcMsg is relative path of file
+                                    if path.endswith('output.xml'):
+                                        dirpath = path[:-10]
+                                        dirpath = os.path.join(dirpath, srcMsg)
+                                        if (c.get('files') is None):
+                                            c['files'] = [dirpath]
+                                        else:
+                                            c['files'] = c['files'].append(dirpath)
+
+                                    
+                        if (child.tag == 'arguments'):
+                            step['_Args'] = ''
+                            firstArg = True
+                            for arg in child:
+                                if (firstArg == True):
+                                    step['_Args'] = arg.text
+                                    firstArg = False
+                                else :
+                                    step['_Args'] = step['_args'] + ', ' + arg.text 
+                    steps.append(step)
+                    stepnum += 1      
+                c['steps'] = steps
+
     def close(self):
         if (self.disabled == True):
             return
@@ -190,6 +263,9 @@ class TesultsListener:
                         buildcase['files'] = files
             self.data['results']['cases'].append(buildcase)
         
+        for c in self.data['results']['cases']:
+            c.pop('robot-id', None)
+
         self.data['target'] = self.target
         print('-----Tesults results upload...-----')
         if len(self.data['results']['cases']) > 0:
