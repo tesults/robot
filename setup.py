@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name='robot-tesults',
-    version='1.1.1',
+    version='1.1.2',
     author='Tesults',
     author_email='help@tesults.com',
     maintainer='Tesults',
