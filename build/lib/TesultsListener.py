@@ -91,7 +91,7 @@ class TesultsListener:
             print('ValueError in configuration file: ' + str(error))
             raise error
         except KeyError as error:
-            print('')
+            pass
 
 
     # command: robot --listener PythonListener.py tests.robot
@@ -190,7 +190,7 @@ class TesultsListener:
                     try:
                         step['_library'] = kw.attrib['library']
                     except KeyError:
-                        print('')
+                        pass
                     
                     step['num'] = stepnum
                     for child in kw:
@@ -220,9 +220,10 @@ class TesultsListener:
                                         dirpath = path[:-10]
                                         dirpath = os.path.join(dirpath, srcMsg)
                                         if (c.get('files') is None):
-                                            c['files'] = [dirpath]
-                                        else:
-                                            c['files'] = c['files'].append(dirpath)
+                                            c['files'] = []
+                                        cfiles = c['files']
+                                        cfiles.append(dirpath)
+                                        c['files'] = cfiles
 
                                     
                         if (child.tag == 'arguments'):
