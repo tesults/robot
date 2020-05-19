@@ -1,6 +1,6 @@
-Metadata-Version: 1.2
+Metadata-Version: 2.1
 Name: robot-tesults
-Version: 1.1.2
+Version: 1.2.0
 Summary: Tesults listener for Robot Framework
 Home-page: https://www.tesults.com/docs?doc=robot
 Author: Tesults
@@ -54,7 +54,7 @@ Description: ==============
         License
         -------
         
-        Distributed under the terms of the `MIT`_ license, "robot-tesults" is free and open source software
+        Distributed under the terms of the MIT license, "robot-tesults" is free and open source software
         
         
         Issues
@@ -81,3 +81,4 @@ Classifier: Programming Language :: Python :: Implementation :: PyPy
 Classifier: Operating System :: OS Independent
 Classifier: License :: OSI Approved :: MIT License
 Requires-Python: >=2.7
+Description-Content-Type: text/x-rst

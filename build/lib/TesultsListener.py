@@ -3,6 +3,7 @@ import sys
 import tempfile
 import configparser
 import tesults
+import robot.libraries.DateTime
 import xml.etree.ElementTree as ET
 
 class TesultsListener:
@@ -148,16 +149,8 @@ class TesultsListener:
         reason = attributes.get('message')
         if (reason is not None):
             testcase['reason'] = reason
-        duration = attributes.get('elapsedtime')
-        if (duration is not None):
-            duration = str(duration / 1000)
-            start = attributes.get('starttime')
-            if (start is None):
-                start = ''
-            end = attributes.get('endtime')
-            if (end is None):
-                end = ''
-            testcase['_Time'] = duration + ' seconds ' + start + ' - ' + end
+        testcase['start'] = robot.libraries.DateTime.convert_date(attributes.get('starttime'), 'epoch', False) * 1000
+        testcase['end'] = robot.libraries.DateTime.convert_date(attributes.get('endtime'), 'epoch', False) * 1000
         tags = attributes.get('tags')
         if (tags is not None):
             if (len(tags) > 0):
@@ -201,8 +194,8 @@ class TesultsListener:
                                 step['result'] = 'fail'
                             else:
                                 step['result'] = 'unknown'
-                            step['_Start'] = child.attrib['starttime']
-                            step['_End'] = child.attrib['endtime']
+                            step['start'] = robot.libraries.DateTime.convert_date(child.attrib['starttime'], 'epoch', False) * 1000
+                            step['end'] = robot.libraries.DateTime.convert_date(child.attrib['endtime'], 'epoch', False) * 1000
                         if (child.tag == 'doc'):
                             step['desc'] = child.text
                         if (child.tag == 'msg'):

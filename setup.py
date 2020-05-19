@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name='robot-tesults',
-    version='1.1.2',
+    version='1.2.0',
     author='Tesults',
     author_email='help@tesults.com',
     maintainer='Tesults',
@@ -22,6 +22,7 @@ setup(
     url='https://www.tesults.com/docs?doc=robot',
     description='Tesults listener for Robot Framework',
     long_description=read('README.rst'),
+    long_description_content_type='text/x-rst',
     py_modules=['TesultsListener'],
     python_requires='>=2.7',
     install_requires=['tesults'],

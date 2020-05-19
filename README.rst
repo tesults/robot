@@ -44,7 +44,7 @@ Visit https://www.tesults.com/docs?doc=robot for documentation.
 License
 -------
 
-Distributed under the terms of the `MIT`_ license, "robot-tesults" is free and open source software
+Distributed under the terms of the MIT license, "robot-tesults" is free and open source software
 
 
 Issues
